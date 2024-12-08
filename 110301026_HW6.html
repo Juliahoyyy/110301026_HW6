@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+	<style>
+		#inputField{
+			width: 180px;
+		}
+        #gameRecord {
+            border: 2px solid grey; 
+            padding: 10px;          
+            margin-top: 10px;       
+            border-radius: 5px;    
+            background-color: #f9f9f9; 
+        }
+
+        ul#recordList {
+            list-style: none;       
+            padding: 0;             
+            margin: 0;              
+        }
+
+        ul#recordList li {
+            margin-bottom: 5px;     
+        }
+    </style>
+</head>
+<body>
+	<h1>110301026_HW6_1A2B</h1>
+	<input type="text" id="inputField" placeholder="請輸入4個不重複的數字">
+	<button onclick="guess()">猜！</button>
+	<div id='gameRecord'>
+		<h2>遊戲紀錄：</h2>
+		<ul id='recordList'></ul>
+	</div>
+
+	<script type="text/javascript">
+		let answer = generateAnswer();
+		let attempt = 0;
+
+		function generateAnswer(){
+            let numbers = Array.from({ length: 10 }, (_, i) => i.toString());
+            let answer = [];
+            for (let i = 0; i < 4; i++) {
+                const randomIndex = Math.floor(Math.random() * numbers.length);
+                answer.push(numbers[randomIndex]);
+                numbers.splice(randomIndex, 1);
+            }
+            return answer;
+        }
+
+        function guess(){
+        	const inputField = document.getElementById('inputField');
+        	const userInput = inputField.value;
+
+        	if(!/^\d{4}$/.test(userInput)){
+        		alert('請輸入4個不重複的數字（數字必須是0-9）！');
+        		inputField.value = '';
+        		return;
+        	}
+        	if(new Set(userInput).size !==4){
+        		alert('請輸入不重複的數字！');
+        		inputField.value = '';
+        		return;
+        	}
+
+        	attempt++;
+        	const result = checkAnswer(userInput);
+        	addRecord(userInput, result);
+
+        	if(result === '4A0B'){
+        		alert(`恭喜答對！共猜了${attempt}次！`);
+        		inputField.value = '';
+        		resetgame();
+        		return;
+        	}
+
+        	inputField.value = '';
+        }
+
+        function checkAnswer(userInput) {
+		    let A = 0;
+		    let B = 0;
+		    for (let i = 0; i < 4; i++) {
+		        if (userInput[i] === answer[i]) {
+		            A++;
+		        } else if (answer.includes(userInput[i])) {
+		            B++;
+		        }
+		    }
+		    return `${A}A${B}B`;
+		}
+
+
+        function addRecord(userInput, result){
+        	const recordList = document.getElementById('recordList');
+        	const newRecord = document.createElement('li');
+            newRecord.textContent = `第${attempt}次：${userInput} → ${result}`;
+            recordList.appendChild(newRecord);
+        }
+
+
+        function resetgame() {
+            answer = generateAnswer();
+            attempt = 0;
+            document.getElementById('recordList').innerHTML = "";
+        }
+
+	</script>
+
+</body>
+</html>
